@@ -123,20 +123,16 @@ pub struct Sample {
 }
 
 fn parse_bucket(s: &str, label: &str) -> Option<f64> {
-    if let Some(kv) = s.split(",").next() {
+    for kv in s.split(",") {
         let kvpair = kv.split("=").collect::<Vec<_>>();
         let (k, v) = (kvpair[0], kvpair[1].trim_matches('"'));
         if k == label {
-            match parse_golang_float(v) {
-                Ok(v) => Some(v),
-                Err(_) => None,
+            if let Ok(v) = parse_golang_float(v) {
+                return Some(v)
             }
-        } else {
-            None
         }
-    } else {
-        None
     }
+    None
 }
 
 #[derive(Debug, PartialEq)]
